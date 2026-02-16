@@ -35,7 +35,7 @@ export const createOrder = async (data: {
       }
 
       //calucate stock
-      totalAmount += product.price * item.quantity;
+      totalAmount = +product.price * item.quantity;
 
       //store snapshot
       orderProducts.push({
@@ -48,6 +48,9 @@ export const createOrder = async (data: {
       product.stock -= item.quantity;
       await product.save({ session });
     }
+
+    console.log("Order Products Snapshot:", orderProducts);
+
     //create order
     const order = await Order.create(
       [
