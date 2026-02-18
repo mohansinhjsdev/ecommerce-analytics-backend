@@ -5,6 +5,7 @@ export const createProduct = async (data: {
   category: string;
   price: number;
   stock: number;
+  image?: string;
 }) => {
   //check if product already exists
   const exisitingProduct = await Product.findOne({

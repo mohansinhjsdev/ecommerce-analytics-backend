@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.model";
 import { Order } from "../models/order.model";
+import { invalidateMonthlyRevenueCache } from "./analyticsCache.service";
 
 export const createOrder = async (data: {
   products: { productId: string; quantity: number }[];
@@ -35,7 +36,7 @@ export const createOrder = async (data: {
       }
 
       //calucate stock
-      totalAmount = +product.price * item.quantity;
+      totalAmount += product.price * item.quantity;
 
       //store snapshot
       orderProducts.push({
@@ -52,19 +53,29 @@ export const createOrder = async (data: {
     console.log("Order Products Snapshot:", orderProducts);
 
     //create order
-    const order = await Order.create(
-      [
-        {
-          products: orderProducts,
-          totalAmount,
-        },
-      ],
-      { session },
-    );
+    // const order = await Order.create(
+    //   [
+    //     {
+    //       products: orderProducts,
+    //       totalAmount,
+    //     },
+    //   ],
+    //   { session },
+    // );
+    const order = new Order({
+      products: orderProducts,
+      totalAmount,
+    });
+
+    await order.save({ session });
+
     await session.commitTransaction();
     session.endSession();
 
-    return order[0];
+    // cache invalidate
+    await invalidateMonthlyRevenueCache();
+
+    return order;
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

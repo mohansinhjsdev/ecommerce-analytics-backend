@@ -12,11 +12,17 @@ import {
   updateProductSchema,
 } from "../validators/product.validator";
 import { validateObjectId } from "../middleware/validateObjectId";
+import { upload } from "../middleware/upload.middleware";
 
 const router = Router();
 console.log("Product route loaded");
 
-router.post("/", validate(createProductSchema), createProduct);
+router.post(
+  "/",
+  upload.single("image"),
+  validate(createProductSchema),
+  createProduct,
+);
 router.get("/get-product", getAllProducts);
 
 router.get("/get-product/:id", validateObjectId, getProduct);

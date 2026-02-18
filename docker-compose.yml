@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: ecommerce-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+      - redis
+    restart: always
+
+  mongodb:
+    image: mongo:7
+    container_name: ecommerce-mongodb
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    restart: always
+
+volumes:
+  mongo_data:

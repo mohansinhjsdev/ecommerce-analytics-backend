@@ -1,17 +1,33 @@
 import { Request, Response } from "express";
 import * as productService from "../services/product.service";
+import { uploadToS3 } from "../utils/s3Upload";
 
 export const createProduct = async (req: Request, res: Response) => {
   console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+
   try {
-    const product = await productService.createProduct(req.body);
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = await uploadToS3(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+      );
+    }
+
+    const productData = {
+      ...req.body,
+      imageUrl: imageUrl,
+    };
+    const product = await productService.createProduct(productData);
 
     res.status(201).json({
       success: true,
       data: product,
     });
   } catch (error: any) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });

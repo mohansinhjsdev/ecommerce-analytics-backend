@@ -11,42 +11,45 @@ export interface IProduct extends Document {
   updatedAt: Date;
 }
 
-const productSchema = new Schema<IProduct>({
-  name: {
-    type: String,
-    required: true,
-    trim:true,
+const productSchema = new Schema<IProduct>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    stock: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    imageUrl: {
+      type: String,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  category: {
-    type: String,
-    required: true,
-    index:true,
-  },
-  price: {
-    type: Number,
-    required: true,
-    min:0,
-  },
-  stock: {
-    type: Number,
-    required: true,
-    min:0,
-  },
-  imageUrl: {
-    type: String,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-},{timestamps:true});
+  { timestamps: true },
+);
 
 export const Product = model<IProduct>("Product", productSchema);
